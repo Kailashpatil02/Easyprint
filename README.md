@@ -1,1 +1,174 @@
-# Easyprint
+# <!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Print - Scan & Print</title>
+    <!-- Tailwind CSS (Styling साठी) -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- FontAwesome (Icons साठी) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 font-sans antialiased">
+
+    <!-- Header -->
+    <header class="bg-blue-600 text-white py-4 px-6 text-center shadow-md">
+        <h1 class="text-xl font-bold tracking-wide"><i class="fa-solid fa-print mr-2"></i> Quick Print</h1>
+        <p class="text-xs opacity-90 mt-1">आपली फाईल अपलोड करा आणि त्वरित प्रिंट मिळवा</p>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-md mx-auto p-4 mt-4">
+        
+        <!-- Step 1: File Upload Box -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm mb-4 border border-gray-100">
+            <h2 class="text-gray-700 font-semibold mb-3 flex items-center">
+                <span class="bg-blue-100 text-blue-600 rounded-full w-6 h-6 flex items-center justify-center text-sm mr-2">1</span>
+                डॉक्युमेंट अपलोड करा
+            </h2>
+            
+            <label class="border-2 border-dashed border-gray-300 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 transition-colors bg-gray-50" id="dropzone">
+                <i class="fa-solid fa-cloud-arrow-up text-3xl text-gray-400 mb-2"></i>
+                <span class="text-sm font-medium text-gray-600">PDF किंवा Image निवडा</span>
+                <span class="text-xs text-gray-400 mt-1">मायक्रोसोफ्ट वर्ड/पीडीएफ फाईल (Max 10MB)</span>
+                <input type="file" id="fileInput" accept=".pdf, .jpg, .jpeg, .png" class="hidden">
+            </label>
+
+            <!-- फाईल सिलेक्ट झाल्यावर तिचे नाव दाखवण्यासाठी -->
+            <div id="fileDetails" class="hidden mt-3 p-3 bg-blue-50 rounded-lg flex items-center justify-between text-sm text-blue-700">
+                <span id="fileName" class="truncate font-medium max-w-[200px]">document.pdf</span>
+                <span id="pageCount" class="text-xs bg-blue-200 text-blue-800 px-2 py-0.5 rounded-full">मोजत आहे...</span>
+            </div>
+        </div>
+
+        <!-- Step 2: Print Options -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm mb-4 border border-gray-100">
+            <h2 class="text-gray-700 font-semibold mb-4 flex items-center">
+                <span class="bg-blue-100 text-blue-600 rounded-full w-6 h-6 flex items-center justify-center text-sm mr-2">2</span>
+                प्रिंट पर्याय निवडा
+            </h2>
+
+            <!-- Print Type (B&W or Color) -->
+            <div class="mb-4">
+                <span class="text-sm text-gray-500 block mb-2">प्रिंट प्रकार</span>
+                <div class="grid grid-cols-2 gap-3">
+                    <label class="border border-gray-200 p-3 rounded-xl flex items-center justify-center cursor-pointer hover:bg-gray-50 peer-checked:border-blue-600">
+                        <input type="radio" name="printType" value="bw" checked class="mr-2 accent-blue-600">
+                        <span class="text-sm font-medium text-gray-700">Black & White</span>
+                    </label>
+                    <label class="border border-gray-200 p-3 rounded-xl flex items-center justify-center cursor-pointer hover:bg-gray-50">
+                        <input type="radio" name="printType" value="color" class="mr-2 accent-blue-600">
+                        <span class="text-sm font-medium text-gray-700">Color</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Copies Counter -->
+            <div class="flex items-center justify-between border-t border-gray-100 pt-4">
+                <span class="text-sm text-gray-500">किती कॉपीज हव्या आहेत?</span>
+                <div class="flex items-center space-x-3">
+                    <button type="button" id="minusBtn" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold w-8 h-8 rounded-lg transition-colors">-</button>
+                    <span id="copiesCount" class="font-semibold text-lg w-6 text-center">1</span>
+                    <button type="button" id="plusBtn" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold w-8 h-8 rounded-lg transition-colors">+</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Bill & Payment -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <span class="text-xs text-gray-400 block">एकूण बिल</span>
+                    <span id="totalBill" class="text-2xl font-bold text-gray-800">₹0.00</span>
+                </div>
+                <div class="text-right">
+                    <span class="text-xs text-gray-400 block">एकूण पेजेस</span>
+                    <span id="displayPages" class="text-sm font-medium text-gray-600">0</span>
+                </div>
+            </div>
+
+            <!-- Payment Button -->
+            <button id="payBtn" disabled class="w-full bg-gray-300 text-gray-500 font-semibold py-3.5 rounded-xl cursor-not-allowed shadow-md transition-all text-center flex items-center justify-center space-x-2">
+                <span><i class="fa-solid fa-shield-halved"></i></span>
+                <span>पेमेंट करा आणि प्रिंट काढा</span>
+            </button>
+        </div>
+
+    </main>
+
+    <!-- JavaScript (Frontend Logic) -->
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const fileDetails = document.getElementById('fileDetails');
+        const fileName = document.getElementById('fileName');
+        const pageCount = document.getElementById('pageCount');
+        const copiesCount = document.getElementById('copiesCount');
+        const totalBill = document.getElementById('totalBill');
+        const displayPages = document.getElementById('displayPages');
+        const payBtn = document.getElementById('payBtn');
+        
+        let totalPages = 0;
+        let copies = 1;
+        let ratePerPage = 2; // Black & White चा दर प्रति पेज ₹२ ठरवला आहे
+
+        // फाइल सिलेक्ट झाल्यावर
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                fileName.textContent = file.name;
+                fileDetails.classList.remove('hidden');
+                
+                // इथे बॅकेंडला फाईल पाठवून पेजेस मोजायचे कोडिंग येईल. 
+                // तात्पुरते आपण डेमोसाठी ३ पेजेस गृहीत धरू.
+                totalPages = 3; 
+                pageCount.textContent = totalPages + " पेजेस";
+                displayPages.textContent = totalPages;
+                
+                calculateBill();
+                enablePayButton();
+            }
+        });
+
+        // प्लस आणि मायनस बटण लॉजिक
+        document.getElementById('plusBtn').addEventListener('click', () => {
+            copies++;
+            copiesCount.textContent = copies;
+            calculateBill();
+        });
+
+        document.getElementById('minusBtn').addEventListener('click', () => {
+            if (copies > 1) {
+                copies--;
+                copiesCount.textContent = copies;
+                calculateBill();
+            }
+        });
+
+        // प्रिंट टाईप बदलल्यावर (B&W चा दर ₹२, Color चा ₹१०)
+        document.querySelectorAll('input[name="printType"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                ratePerPage = e.target.value === 'color' ? 10 : 2;
+                calculateBill();
+            });
+        });
+
+        // बिल कॅल्क्युलेशन
+        function calculateBill() {
+            const amount = totalPages * copies * ratePerPage;
+            totalBill.textContent = "₹" + amount.toFixed(2);
+        }
+
+        // पेमेंट बटण ऍक्टिव्ह करणे
+        function enablePayButton() {
+            payBtn.disabled = false;
+            payBtn.className = "w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 rounded-xl shadow-md cursor-pointer transition-all text-center flex items-center justify-center space-x-2";
+        }
+
+        // पेमेंट बटणावर क्लिक केल्यावर
+        payBtn.addEventListener('click', () => {
+            alert('आता Razorpay चा पेमेंट गेटवे ओपन होईल...');
+            // इथे बॅकेंड API कॉल करून Razorpay ची विंडो ओपन करावी लागेल.
+        });
+    </script>
+</body>
+</html>
