@@ -112,24 +112,42 @@
         let ratePerPage = 2; // Black & White चा दर प्रति पेज ₹२ ठरवला आहे
 
         // फाइल सिलेक्ट झाल्यावर
-        fileInput.addEventListener('change', (e) => {
+         fileInput.addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (file) {
                 fileName.textContent = file.name;
                 fileDetails.classList.remove('hidden');
-                
-                // इथे बॅकेंडला फाईल पाठवून पेजेस मोजायचे कोडिंग येईल. 
-                // तात्पुरते आपण डेमोसाठी ३ पेजेस गृहीत धरू.
-                totalPages = 3; 
-                pageCount.textContent = totalPages + " पेजेस";
-                displayPages.textContent = totalPages;
-                
-                calculateBill();
-                enablePayButton();
-            }
-        });
+                pageCount.textContent = "मोजत आहे...";
 
-        // प्लस आणि मायनस बटण लॉजिक
+                // FormData तयार करून त्यात फाईल टाकणे
+                const formData = new FormData();
+                formData.append('file', file);
+
+                try {
+                    // कॉम्प्युटरवर चालणाऱ्या लोकल सर्व्हरला फाईल पाठवणे
+                    const response = await fetch('http://localhost:5000/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        totalPages = data.pages; // सर्व्हरने दिलेले खरे पेजेस!
+                        pageCount.textContent = totalPages + " पेजेस";
+                        displayPages.textContent = totalPages;
+                        
+                        calculateBill();
+                        enablePayButton();
+                    } else {
+                        alert("एरर: " + data.error);
+                    }
+                } catch (error) {
+                    console.error("Server Error:", error);
+                    alert("बॅकेंड सर्व्हर चालू नाही! कृपया कम्प्युटरवर node server.js रन करा.");
+                }
+            }
+        });        // प्लस आणि मायनस बटण लॉजिक
         document.getElementById('plusBtn').addEventListener('click', () => {
             copies++;
             copiesCount.textContent = copies;
